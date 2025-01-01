@@ -1,9 +1,19 @@
+'use client'
+
+import { api } from './api/rpc/client'
+
 import { Button } from '@radix-ui/themes'
 
-export default async function Home() {
+export default function Home() {
+  const { mutate, isPending, data } = api.test.useMutation()
+
+  console.log(data)
+
   return (
     <div>
-      <Button>Hello</Button>
+      <Button onClick={() => mutate()} loading={isPending}>
+        Hello
+      </Button>
     </div>
   )
 }
