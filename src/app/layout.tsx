@@ -1,9 +1,9 @@
 import '@/globals.css'
 
-import RPCProvider from '@/core/ui/providers/rpc-provider'
 import ThemeProvider from '@/core/ui/providers/theme-provider'
 
 import { type Metadata, type Viewport } from 'next'
+import { SessionProvider } from 'next-auth/react'
 import { Inter } from 'next/font/google'
 
 export const metadata: Metadata = {
@@ -29,9 +29,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" className={`${inter.variable} font-sans`} suppressHydrationWarning>
       <body>
-        <RPCProvider>
+        <SessionProvider>
           <ThemeProvider>{children}</ThemeProvider>
-        </RPCProvider>
+        </SessionProvider>
       </body>
     </html>
   )

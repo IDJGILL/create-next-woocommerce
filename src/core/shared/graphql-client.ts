@@ -1,6 +1,6 @@
 import { env } from '@/env'
 
-export const client = async <TData = unknown, TVariables = void>(query: string, variables?: TVariables) => {
+export const client = async <TData = unknown, TVariables = unknown>(query: string, variables?: TVariables) => {
   const credentials = Buffer.from(`${env.WORDPRESS_APP_USERNAME}:${env.WORDPRESS_APP_PASSWORD}`).toString('base64')
 
   const authorization = 'Basic ' + credentials

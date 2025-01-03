@@ -46,17 +46,17 @@ function FormField<TFieldValues extends FieldValues = FieldValues, TName extends
 interface UseFormOptions<TFieldValues extends FieldValues> {
   schema: ZodSchema<TFieldValues>
   onSubmit?: (data: ZodSchema<TFieldValues>['_output']) => void
-  initialValues?: Partial<TFieldValues>
+  initial?: Partial<TFieldValues>
   logger?: boolean
 }
 
-function useForm<TFieldValues extends FieldValues>(options: UseFormOptions<TFieldValues>) {
+function useCreateForm<TFieldValues extends FieldValues>(options: UseFormOptions<TFieldValues>) {
   const form = useFormCore<ZodSchema<TFieldValues>['_input']>({
     resolver: zodResolver(options.schema),
-    defaultValues: options.initialValues as DefaultValues<TFieldValues>,
+    defaultValues: options.initial as DefaultValues<TFieldValues>,
   })
 
-  const handleSubmit = () => {
+  const submit = () => {
     return form.handleSubmit((input) => {
       if (options.logger) console.table(input)
 
@@ -64,17 +64,15 @@ function useForm<TFieldValues extends FieldValues>(options: UseFormOptions<TFiel
     })()
   }
 
-  const hasUnSavedChanges = !!Object.keys(form.formState.dirtyFields).length
+  const isUnSaved = !!Object.keys(form.formState.dirtyFields).length
 
-  const discardChanges = () => {
+  const discard = () => {
     form.reset(form.formState.defaultValues as TFieldValues)
   }
 
-  const handleFormDefaults = (e?: BaseSyntheticEvent) => e?.preventDefault()
+  const commit = (items?: Partial<ZodSchema<TFieldValues>['_input']>) => form.reset({ ...form.getValues(), ...items })
 
-  const commitChanges = (items?: Partial<ZodSchema<TFieldValues>['_input']>) => form.reset({ ...form.getValues(), ...items })
-
-  const handleReset = () => form.reset()
+  const rest = () => form.reset()
 
   if (options.logger) {
     const errors = form.formState.errors
@@ -88,15 +86,14 @@ function useForm<TFieldValues extends FieldValues>(options: UseFormOptions<TFiel
 
   return {
     form,
-    handleSubmit,
-    hasUnSavedChanges,
-    discardChanges,
-    handleFormDefaults,
-    commitChanges,
-    handleReset,
+    submit,
+    isUnSaved,
+    discard,
+    commit,
+    rest,
   }
 }
 
-export type UseFormReturnType<TFieldValues extends FieldValues> = ReturnType<typeof useForm<TFieldValues>>
+export type UseFormReturnType<TFieldValues extends FieldValues> = ReturnType<typeof useCreateForm<TFieldValues>>
 
-export { Form, FormField, useForm, type UseFormOptions }
+export { Form, FormField, useCreateForm, type UseFormOptions }
